@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MyPhoneBook</string>
+    <string name="title_activity_found_list">FoundListActivity</string>
+</resources>
