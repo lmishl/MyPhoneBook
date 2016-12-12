@@ -16,28 +16,13 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    DataBaseHelper myDbHelper;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        myDbHelper = new DataBaseHelper(this);
-        //myDbHelper = new DataBaseHelper(this);
-
-        try {
-            myDbHelper.createDataBase();
-        } catch (IOException ioe) {
-            throw new Error("Unable to create database");
-        }
-
-        try {
-            myDbHelper.openDataBase();
-        } catch (SQLException sqle) {
-            throw sqle;
-        }
     }
 
     public void buttonReadCallsClick(View view) {
@@ -52,8 +37,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void findPhone(String phoneToFind)
     {
-        SQLiteDatabase db = myDbHelper.getReadableDatabase();
-        Cursor c = db.rawQuery("select * from person where phone = ?", new String[]{phoneToFind});
+        DbFinder finder = DbFinder.getInstance(this);
+
+        Cursor c = finder.findByPhone(phoneToFind);
         if (c.getCount() == 0)
             Toast.makeText(this, "Ничего не найдено", Toast.LENGTH_SHORT).show();
         else {
