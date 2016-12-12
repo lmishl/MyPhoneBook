@@ -13,26 +13,16 @@ import static com.example.notebook.myphonebook.R.id.textView;
 
 public class PersonInfoActivity extends AppCompatActivity {
 
-    DataBaseHelper myDbHelper;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_person_info);
 
-        myDbHelper = new DataBaseHelper(this);
-        try {
-            myDbHelper.openDataBase();
-        } catch (SQLException sqle) {
-            throw sqle;
-        }
-
-        SQLiteDatabase db = myDbHelper.getReadableDatabase();
-
+        DbFinder finder = DbFinder.getInstance(this);
 
         Intent intent = getIntent();
         String id = intent.getStringExtra("id");
-        Cursor c = db.rawQuery("select * from person where id_person = ?", new String[]{id});
+        Cursor c = finder.findById(id);
         c.moveToNext();
 
         TextView lastnameView = (TextView) findViewById(R.id.textViewLastName);

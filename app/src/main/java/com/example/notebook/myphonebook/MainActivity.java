@@ -54,22 +54,17 @@ public class MainActivity extends AppCompatActivity {
 
             } else {
 
-
                 ArrayList<String> ids = new ArrayList<>();
                 while (c.moveToNext()) {
                     ids.add(c.getString(0));
                 }
 
-                Intent intent = new Intent(MainActivity.this, FoundListActivity.class);
+                Intent intent = new Intent(this, FoundListActivity.class);
                 intent.putExtra("ids", ids);
                 startActivity(intent);
             }
-
-
         }
         c.close();
-
-
     }
 
     public void buttonFindClick(View view) {
@@ -77,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
         String phoneToFind = ((EditText) findViewById(R.id.editText2)).getText().toString();
 
         findPhone(phoneToFind);
-
     }
 
 }

@@ -17,7 +17,6 @@ import java.util.ArrayList;
 
 public class FoundListActivity extends AppCompatActivity {
 
-    DataBaseHelper myDbHelper;
     ArrayList<String> ids;
 
     @Override
@@ -25,29 +24,16 @@ public class FoundListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_found_list);
 
-        myDbHelper = new DataBaseHelper(this);
-        try {
-            myDbHelper.openDataBase();
-        } catch (SQLException sqle) {
-            throw sqle;
-        }
+        DbFinder finder = DbFinder.getInstance(this);
 
-        SQLiteDatabase db = myDbHelper.getReadableDatabase();
-
-
-
-
-        Intent intent = getIntent();
-        ids = intent.getStringArrayListExtra("ids");
+        ids = getIntent().getStringArrayListExtra("ids");
         ArrayList<String>  fio = new ArrayList<String>();
         for (String id : ids) {
-            Cursor c = db.rawQuery("select * from person where id_person = ?", new String[]{id});
+            Cursor c = finder.findById(id);
             c.moveToNext();
             fio.add(c.getString(1) + " " + c.getString(2) + " " + c.getString(3));
 
             c.close();
-
-
         }
 
         ArrayAdapter<String> adapter  =  new ArrayAdapter<String>(

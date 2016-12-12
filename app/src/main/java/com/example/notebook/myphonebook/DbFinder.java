@@ -49,4 +49,8 @@ public class DbFinder {
     public Cursor findByPhone(String phoneToFind){
        return db.rawQuery("select * from person where phone = ?", new String[]{phoneToFind});
     }
+
+    public Cursor findById(String id){
+        return db.rawQuery("select * from person where id_person = ?", new String[]{id});
+    }
 }
