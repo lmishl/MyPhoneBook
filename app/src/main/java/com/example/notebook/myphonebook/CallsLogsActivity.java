@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.provider.CallLog;
+import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.PhoneNumberUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -106,13 +108,7 @@ public class CallsLogsActivity extends AppCompatActivity {
         calls = new ArrayList<String>();
         while (managedCursor.moveToNext()) {
             String phNum = managedCursor.getString(number);
-            if(phNum.startsWith("8"))
-                phones.add(phNum.substring(1));
-            else
-                if(phNum.startsWith("+7"))
-                    phones.add(phNum.substring(2));
-            else
-                    phones.add(phNum);
+            phones.add(get10DigitNumber(phNum));        //save phNum
             String callTypeCode = managedCursor.getString(type);
             String strcallDate = managedCursor.getString(date);
             Date callDate = new Date(Long.valueOf(strcallDate));
@@ -129,13 +125,45 @@ public class CallsLogsActivity extends AppCompatActivity {
                 case CallLog.Calls.MISSED_TYPE:
                     callType = "Пропущенный";
                     break;
-        }
+            }
             DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyy HH:mm:ss");
-            String oneCall = "\nPhone Number:--- " + phNum + " \nCall Type:--- "
+            String oneCall = getContactInfo(phNum) + "Phone Number:--- " + phNum + " \nCall Type:--- "
                     + callType + " \nCall Date:--- " + dateFormat.format(callDate)
                     + " \nCall duration in sec :--- " + callDuration;
             calls.add(oneCall);
         }
         managedCursor.close();
+    }
+
+    private String get10DigitNumber(String phNum) {
+        if (phNum.startsWith("8"))
+            return phNum.substring(1);
+        if (phNum.startsWith("+7"))
+            return phNum.substring(2);
+
+        return phNum;
+
+    }
+
+    private String getContactInfo(String phNum)
+    {
+        String phoneNumber = PhoneNumberUtils.stripSeparators(phNum);
+
+        String[] projection = new String[] { ContactsContract.Data.CONTACT_ID, ContactsContract.Contacts.LOOKUP_KEY, ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.Contacts.STARRED, ContactsContract.Contacts.CONTACT_STATUS, ContactsContract.Contacts.CONTACT_PRESENCE };
+
+        String selection = "PHONE_NUMBERS_EQUAL(" + ContactsContract.CommonDataKinds.Phone.NUMBER + ",?) AND " + ContactsContract.Contacts.Data.MIMETYPE + "='" + ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE + "'";
+        String[] selectionArgs = new String[] { phoneNumber };
+        Cursor cursor = getContentResolver().query(ContactsContract.Data.CONTENT_URI, projection, selection, selectionArgs, null);
+
+        String result = "";
+        if(cursor.getCount()>0){
+            cursor.moveToFirst();
+            result =  cursor.getString(2)+"\n";
+        }
+
+
+
+
+        return result;
     }
 }

@@ -3,6 +3,7 @@
     package="com.example.notebook.myphonebook">
 
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
